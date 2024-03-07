@@ -24,9 +24,9 @@ public class TestDriver {
             System.out.println(i.getTestClassName());
         }
         return results;
-=======
 
->>>>>>> Stashed changes
+
+
     }
 
     public static void main(String[] args) {
