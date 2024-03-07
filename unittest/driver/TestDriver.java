@@ -21,8 +21,8 @@ public class TestDriver {
         for (String className : testclasses) {
             try {
                 Class<?> clazz = Class.forName(className);
-                Object testInstance = clazz.getDeclaredConstructor().newInstance();
-                TestClassResult classResult = new TestClassResult(className);
+                Object testInstance = clazz.getDeclaredConstructor().newInstance(); // cut it right here and put it in test runner
+                TestClassResult classResult = new TestClassResult(className); //we will just use the test runners run
 
                 for (Method method : clazz.getDeclaredMethods()) {
                     if (method.isAnnotationPresent(unittest.annotations.Test.class)) {
