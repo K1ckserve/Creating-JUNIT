@@ -2,7 +2,9 @@ package unittest.driver;
 
 import sampletest.TestA;
 import unittest.results.TestClassResult;
+import unittest.results.TestMethodResult;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,14 +17,30 @@ public class TestDriver {
     public static List<TestClassResult> runTests(String[] testclasses) {
         // TODO: complete this method
         // We will call this method from our JUnit test cases.
-<<<<<<< Updated upstream
         ArrayList<TestClassResult> results = new ArrayList<TestClassResult>();
-        for(int i = 0; i< testclasses.length; i++){
-            results.add(new TestClassResult(testclasses[i]));
+        for (String className : testclasses) {
+            try {
+                Class<?> clazz = Class.forName(className);
+                Object testInstance = clazz.getDeclaredConstructor().newInstance();
+                TestClassResult classResult = new TestClassResult(className);
+
+                for (Method method : clazz.getDeclaredMethods()) {
+                    if (method.isAnnotationPresent(unittest.annotations.Test.class)) {
+                        try {
+                            method.invoke(testInstance);
+                            classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
+                        } catch (Exception e) {
+                            //classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, e.getCause().getMessage()));
+                        }
+                    }
+                }
+
+                results.add(classResult);
+            } catch (Exception e) {
+                e.printStackTrace(); // Handle errors related to class loading or instantiation
+            }
         }
-        for(TestClassResult i: results){
-            System.out.println(i.getTestClassName());
-        }
+
         return results;
 
 
@@ -31,6 +49,7 @@ public class TestDriver {
 
     public static void main(String[] args) {
         // Use this for your testing.  We will not be calling this method.
-        runTests(TestA);
+        String[] testClasses = {"sampletest.TestA"};
+        runTests(testClasses);
     }
 }
