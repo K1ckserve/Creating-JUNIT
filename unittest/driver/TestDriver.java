@@ -15,6 +15,7 @@ public class TestDriver {
     public static List<TestClassResult> runTests(String[] testclasses) {
         // TODO: complete this method
         // We will call this method from our JUnit test cases.
+<<<<<<< Updated upstream
         ArrayList<TestClassResult> results = new ArrayList<TestClassResult>();
         for(int i = 0; i< testclasses.length; i++){
             results.add(new TestClassResult(testclasses[i]));
@@ -23,6 +24,9 @@ public class TestDriver {
             System.out.println(i.getTestClassName());
         }
         return results;
+=======
+
+>>>>>>> Stashed changes
     }
 
     public static void main(String[] args) {
