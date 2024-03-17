@@ -46,6 +46,7 @@ public class TestDriver {
                     clazz = Class.forName(className);
                     testInstance = clazz.getDeclaredConstructor().newInstance(); // cut it right here and put it in test runner
                     TR = new TestRunner(clazz, className);
+                    results.add(TR.run());
                 }
 //                Class<?> clazz = Class.forName(className);
 //                Object testInstance = clazz.getDeclaredConstructor().newInstance(); // cut it right here and put it in test runner
@@ -64,10 +65,13 @@ public class TestDriver {
 //                }
 //
 //                results.add(classResult);
-//            } catch (Exception e) {
-//                e.printStackTrace(); // Handle errors related to class loading or instantiation
-//            }
+            } catch (Exception e) {
+                e.printStackTrace(); // Handle errors related to class loading or instantiation
+            }
         }
+//        for(TestClassResult A: results){
+//            System.out.println(A.)
+//        }
 
         return results;
 
@@ -77,7 +81,7 @@ public class TestDriver {
 
     public static void main(String[] args) {
         // Use this for your testing.  We will not be calling this method.
-        String[] testClasses = {"sampletest.TestA#test1"};
+        String[] testClasses = {"sampletest.TestB"};
         runTests(testClasses);
     }
 }

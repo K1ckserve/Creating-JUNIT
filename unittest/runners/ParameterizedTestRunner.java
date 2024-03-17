@@ -3,7 +3,7 @@ package unittest.runners;
 public class ParameterizedTestRunner extends TestRunner {
 
     public ParameterizedTestRunner(Class testClass) {
-        super(testClass);
+        super(testClass, "");
         // TODO: complete this constructor
     }
 

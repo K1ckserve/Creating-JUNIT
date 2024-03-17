@@ -1,6 +1,7 @@
 package unittest.runners;
 
 import unittest.annotations.Test;
+import unittest.assertions.AssertionException;
 import unittest.listeners.TestListener;
 import unittest.results.TestClassResult;
 import unittest.results.TestMethodResult;
@@ -10,25 +11,32 @@ import java.lang.reflect.Method;
 public class TestRunner {
     Class testClass;
     String className;
+    //Object testInstance;
+
 
     public TestRunner(Class testClass, String className) {
         this.testClass = testClass;
         this.className = className;
+       // this.testInstance = testInstance;
         // TODO: complete this constructor
     }
 
     public TestClassResult run() {
-        Object testInstance = testClass.getDeclaredConstructor().newInstance();
         TestClassResult classResult = new TestClassResult(className); //we will just use the test runners run
-        for (Method method : testClass.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Test.class)) {
-                try {
-                    method.invoke(testInstance);
-                    classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
-                } catch (Exception e) {
-                    //classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, e.getCause().getMessage()));
+        try{
+            Object testInstance = testClass.getDeclaredConstructor().newInstance();
+            for (Method method : testClass.getDeclaredMethods()) {
+                if (method.isAnnotationPresent(Test.class)) {
+                    try {
+                        method.invoke(testInstance);
+                        classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
+                    } catch (Exception e) {
+                        classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, e));
+                    }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle errors related to class loading or instantiation
         }
         return classResult;
 }
