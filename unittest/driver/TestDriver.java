@@ -45,28 +45,28 @@ public class TestDriver {
                 }else{ // if nothing else then we will run basic TR
                     clazz = Class.forName(className);
                     testInstance = clazz.getDeclaredConstructor().newInstance(); // cut it right here and put it in test runner
-                    TR = new TestRunner(clazz);
+                    TR = new TestRunner(clazz, className);
                 }
 //                Class<?> clazz = Class.forName(className);
 //                Object testInstance = clazz.getDeclaredConstructor().newInstance(); // cut it right here and put it in test runner
 //                TestClassResult classResult = new TestClassResult(className); //we will just use the test runners run
 
 
-                for (Method method : clazz.getDeclaredMethods()) {
-                    if (method.isAnnotationPresent(unittest.annotations.Test.class)) {
-                        try {
-                            method.invoke(testInstance);
-                            classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
-                        } catch (Exception e) {
-                            //classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, e.getCause().getMessage()));
-                        }
-                    }
-                }
-
-                results.add(classResult);
-            } catch (Exception e) {
-                e.printStackTrace(); // Handle errors related to class loading or instantiation
-            }
+//                for (Method method : clazz.getDeclaredMethods()) {
+//                    if (method.isAnnotationPresent(unittest.annotations.Test.class)) {
+//                        try {
+//                            method.invoke(testInstance);
+//                            classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
+//                        } catch (Exception e) {
+//                            //classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, e.getCause().getMessage()));
+//                        }
+//                    }
+//                }
+//
+//                results.add(classResult);
+//            } catch (Exception e) {
+//                e.printStackTrace(); // Handle errors related to class loading or instantiation
+//            }
         }
 
         return results;
