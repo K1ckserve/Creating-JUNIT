@@ -64,9 +64,9 @@ public class TestDriver {
 //                }
 //
 //                results.add(classResult);
-//            } catch (Exception e) {
-//                e.printStackTrace(); // Handle errors related to class loading or instantiation
-//            }
+            } catch (Exception e) {
+                e.printStackTrace(); // Handle errors related to class loading or instantiation
+            }
         }
 
         return results;
