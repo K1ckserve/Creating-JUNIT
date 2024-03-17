@@ -31,7 +31,8 @@ public class TestRunner {
                         method.invoke(testInstance);
                         classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
                     } catch (Exception e) {
-                        classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, e));
+                        AssertionException assertionException = new AssertionException(e.getMessage());
+                        classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, assertionException));
                     }
                 }
             }
