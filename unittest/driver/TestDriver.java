@@ -24,6 +24,7 @@ public class TestDriver {
         // We will call this method from our JUnit test cases.
         ArrayList<TestClassResult> results = new ArrayList<TestClassResult>();
         for (String className : testclasses) {
+
             try {
                 Class<?> clazz; // put all of these are becasue the scop was fucked
                 Object testInstance;
@@ -49,6 +50,7 @@ public class TestDriver {
 //                Class<?> clazz = Class.forName(className);
 //                Object testInstance = clazz.getDeclaredConstructor().newInstance(); // cut it right here and put it in test runner
 //                TestClassResult classResult = new TestClassResult(className); //we will just use the test runners run
+
 
                 for (Method method : clazz.getDeclaredMethods()) {
                     if (method.isAnnotationPresent(unittest.annotations.Test.class)) {
