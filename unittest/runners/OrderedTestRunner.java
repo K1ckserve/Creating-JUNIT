@@ -2,8 +2,8 @@ package unittest.runners;
 
 public class OrderedTestRunner extends TestRunner {
 
-    public OrderedTestRunner(Class testClass) {
-        super(testClass,"");
+    public OrderedTestRunner(Class testClass, String className) {
+        super(testClass,className);
         // TODO: complete this constructor
     }
 

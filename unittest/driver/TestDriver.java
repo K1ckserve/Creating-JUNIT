@@ -1,6 +1,7 @@
 package unittest.driver;
 
 import sampletest.TestA;
+import unittest.annotations.Order;
 import unittest.results.TestClassResult;
 import unittest.results.TestMethodResult;
 import unittest.runners.FilteredTestRunner;
@@ -25,7 +26,6 @@ public class TestDriver {
 
             try {
                 Class<?> clazz; // put all of these are becasue the scop was fucked
-                Object testInstance;
                 FilteredTestRunner FTR;
                 OrderedTestRunner ORT;
                 ParameterizedTestRunner PTR;
@@ -38,13 +38,14 @@ public class TestDriver {
                     methodsToRun = parts[1].split(",");
                     Collections.addAll(mthds, methodsToRun);
                     clazz = Class.forName(className);
-                    testInstance = clazz.getDeclaredConstructor().newInstance();
-                    FTR = new FilteredTestRunner(clazz, mthds);
+                    FTR = new FilteredTestRunner(clazz, mthds, className);
                     results.add(FTR.run());
                 }else{ // if nothing else then we will run basic TR
                     clazz = Class.forName(className);
-                    testInstance = clazz.getDeclaredConstructor().newInstance(); // cut it right here and put it in test runner
                     TR = new TestRunner(clazz, className);
+                    if(clazz.isAnnotationPresent(Order.class)){
+                        TR = new OrderedTestRunner(clazz, className);
+                    }
                     results.add(TR.run());
                 }
             } catch (Exception e) {
@@ -85,7 +86,8 @@ public class TestDriver {
 //ff
     public static void main(String[] args) {
         // Use this for your testing.  We will not be calling this method.
-        String[] testClasses = {"sampletest.TestC"};
+        //String[] testClasses = {"sampletest.TestC#test4,test5"};
+        String[] testClasses = {"sampletest.TestC#test4,test5"};
         runTests(testClasses);
     }
 }
