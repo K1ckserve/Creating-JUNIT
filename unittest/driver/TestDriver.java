@@ -9,9 +9,7 @@ import unittest.runners.ParameterizedTestRunner;
 import unittest.runners.TestRunner;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class TestDriver {
 
@@ -48,31 +46,35 @@ public class TestDriver {
                     TR = new TestRunner(clazz, className);
                     results.add(TR.run());
                 }
-//                Class<?> clazz = Class.forName(className);
-//                Object testInstance = clazz.getDeclaredConstructor().newInstance(); // cut it right here and put it in test runner
-//                TestClassResult classResult = new TestClassResult(className); //we will just use the test runners run
-
-
-//                for (Method method : clazz.getDeclaredMethods()) {
-//                    if (method.isAnnotationPresent(unittest.annotations.Test.class)) {
-//                        try {
-//                            method.invoke(testInstance);
-//                            classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
-//                        } catch (Exception e) {
-//                            //classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, e.getCause().getMessage()));
-//                        }
-//                    }
-//                }
-//
-//                results.add(classResult);
             } catch (Exception e) {
                 e.printStackTrace(); // Handle errors related to class loading or instantiation
             }
         }
-//        for(TestClassResult A: results){
-//            System.out.println(A.)
-//        }
+        Map<TestMethodResult, TestClassResult> print = new HashMap<>();
+        for(TestClassResult a : results){
+            String plug;
+            for (TestMethodResult b: a.getTestMethodResults()){
+                if(b.isPass()){
+                    plug= "PASS";
+                }else{
+                    plug= "FAIL";
+                    print.put(b,a);
+                }
+                System.out.println(a.getTestClassName()+ "." +b.getName()+ " : " + plug);
+            }
+        }
+        System.out.println("==========");
+        System.out.println("FAILURES:");
+        for(Map.Entry<TestMethodResult, TestClassResult> iter: print.entrySet()){
+            TestMethodResult key = iter.getKey();
+            TestClassResult value = iter.getValue();
+            System.out.println(value.getTestClassName()+"."+key.getName()+":");
 
+        }
+//        for(TestMethodResult c : print){
+//            c.getException().
+//            c.getException().printStackTrace();
+//        }
         return results;
 
 
