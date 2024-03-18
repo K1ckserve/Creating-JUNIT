@@ -2,6 +2,7 @@ package unittest.driver;
 
 import sampletest.TestA;
 import unittest.annotations.Order;
+import unittest.annotations.Ordered;
 import unittest.results.TestClassResult;
 import unittest.results.TestMethodResult;
 import unittest.runners.FilteredTestRunner;
@@ -42,10 +43,11 @@ public class TestDriver {
                     results.add(FTR.run());
                 }else{ // if nothing else then we will run basic TR
                     clazz = Class.forName(className);
-                    TR = new TestRunner(clazz, className);
-                    if(clazz.isAnnotationPresent(Order.class)){
+
+                    if(clazz.isAnnotationPresent(Ordered.class)){
                         TR = new OrderedTestRunner(clazz, className);
                     }
+                    TR = new TestRunner(clazz, className);
                     results.add(TR.run());
                 }
             } catch (Exception e) {
