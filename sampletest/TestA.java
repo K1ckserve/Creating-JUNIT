@@ -10,6 +10,6 @@ public class TestA {
     }
     @Test
     public void test2() {
-        Assert.assertEquals(3, 1 + "s");
+        Assert.assertEquals(3, 1 + 2);
     }
 }

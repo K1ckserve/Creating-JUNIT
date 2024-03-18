@@ -40,6 +40,7 @@ public class TestDriver {
                     clazz = Class.forName(className);
                     testInstance = clazz.getDeclaredConstructor().newInstance();
                     FTR = new FilteredTestRunner(clazz, mthds);
+                    results.add(FTR.run());
                 }else{ // if nothing else then we will run basic TR
                     clazz = Class.forName(className);
                     testInstance = clazz.getDeclaredConstructor().newInstance(); // cut it right here and put it in test runner
@@ -50,6 +51,7 @@ public class TestDriver {
                 e.printStackTrace(); // Handle errors related to class loading or instantiation
             }
         }
+        int counter=0;
         Map<TestMethodResult, TestClassResult> print = new HashMap<>();
         for(TestClassResult a : results){
             String plug;
@@ -60,6 +62,7 @@ public class TestDriver {
                     plug= "FAIL";
                     print.put(b,a);
                 }
+                counter++;
                 System.out.println(a.getTestClassName()+ "." +b.getName()+ " : " + plug);
             }
         }
@@ -69,12 +72,11 @@ public class TestDriver {
             TestMethodResult key = iter.getKey();
             TestClassResult value = iter.getValue();
             System.out.println(value.getTestClassName()+"."+key.getName()+":");
-
+            key.getException().printStackTrace();
         }
-//        for(TestMethodResult c : print){
-//            c.getException().
-//            c.getException().printStackTrace();
-//        }
+        System.out.println("==========");
+        System.out.println("Tests run: "+ counter+", Failures: "+print.size());
+
         return results;
 
 
@@ -83,7 +85,7 @@ public class TestDriver {
 //ff
     public static void main(String[] args) {
         // Use this for your testing.  We will not be calling this method.
-        String[] testClasses = {"sampletest.TestB"};
+        String[] testClasses = {"sampletest.TestC"};
         runTests(testClasses);
     }
 }
