@@ -31,6 +31,7 @@ public class TestRunner {
                         method.invoke(testInstance);
                         classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
                     } catch (Exception e) {
+                        Throwable cause = e.getCause();
                         AssertionException assertionException = new AssertionException(e.getMessage());
                         classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, assertionException));
                     }
