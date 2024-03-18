@@ -89,7 +89,7 @@ public class TestDriver {
     public static void main(String[] args) {
         // Use this for your testing.  We will not be calling this method.
         //String[] testClasses = {"sampletest.TestC#test4,test5"};
-        String[] testClasses = {"sampletest.TestD"};
+        String[] testClasses = {"sampletest.TestC"};
         runTests(testClasses);
     }
 }
