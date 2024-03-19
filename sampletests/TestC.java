@@ -1,4 +1,4 @@
-package sampletest;
+package sampletests;
 
 import unittest.annotations.Test;
 import unittest.assertions.Assert;
