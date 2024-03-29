@@ -58,8 +58,6 @@ public class TestRunner {
 }
 
     public void addListener(TestListener listener) {
-        // Do NOT implement this method for Assignment 4
-        // You will implement this for Assignment 5
-        // Do NOT remove this method
+
     }
 }
