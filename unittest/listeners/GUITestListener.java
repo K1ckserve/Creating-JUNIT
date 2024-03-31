@@ -25,7 +25,7 @@ public class GUITestListener implements TestListener {
     @Override
     public void testFailed(TestMethodResult testMethodResult) {
 
-            TestGUI.appendText("Test Failed: " + testMethodResult.getName() + ". Click 'View Details' for more info.");
+            TestGUI.appendText("Test Failed: " + testMethodResult.getName());
             // Assuming TestGUI can handle a request to show details
             TestGUI.showDetailsButton(testMethodResult.getName(), testMethodResult.getException());
     }
