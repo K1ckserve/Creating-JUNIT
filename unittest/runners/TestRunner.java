@@ -53,7 +53,6 @@ public class TestRunner {
                         classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
                     } catch (Exception e) {
                         Throwable cause = e.getCause();
-                        guilist.testFailed(new TestMethodResult(method.getName(), false, (AssertionException) cause));
                         classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, (AssertionException) cause));
                     }
                 }

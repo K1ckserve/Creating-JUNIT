@@ -1,13 +1,12 @@
 package unittest.gui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import unittest.annotations.Ordered;
@@ -24,6 +23,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class TestGUI extends Application {
+    private static TextArea outputArea;
+
 
     // Assuming these are your test classes
     private List<Class<?>> getTestClasses() {
@@ -39,19 +40,38 @@ public class TestGUI extends Application {
         }
         return classes;
     }
+    public static void appendText(String text) {
+        Platform.runLater(() -> {
+            if (outputArea != null) {
+                outputArea.appendText(text + "\n");
+            } else {
+                System.err.println("Attempted to append text to an uninitialized output area: " + text);
+            }
+        });
+    }
 
     @Override
     public void start(Stage applicationStage) throws Exception {
-        Map<String,ArrayList<String>> d = new HashMap<>();
-        d.put("test1",new ArrayList<>());
-        d.put("test2",new ArrayList<>());
-        d.put("test3",new ArrayList<>());
-        applicationStage.setTitle("Test Framework GUI");
+        outputArea = new TextArea();
+        outputArea.setEditable(false); // Prevent the user from editing this area directly.
 
+        // Assuming the rest of your setup is here...
+        // Ensure outputArea is added to your layout, e.g., gridPane, and properly configured
+        // before making it visible or interacting with it.
+
+        applicationStage.setTitle("Test Framework GUI");
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(20, 20, 20, 20));
+
+        // Add outputArea to your gridPane or other layout containers
+        gridPane.add(outputArea, 0, 2, 2, 1);
+        Map<String,ArrayList<String>> d = new HashMap<>();
+        d.put("test1",new ArrayList<>());
+        d.put("test2",new ArrayList<>());
+        d.put("test3",new ArrayList<>());
+
 
         ListView<CheckBox> testSelectionListView = new ListView<>();
         ObservableList<CheckBox> testItems = FXCollections.observableArrayList();
@@ -100,13 +120,16 @@ public class TestGUI extends Application {
                 testDriverSend.set(count, testDriverSend.get(count).substring(0, testDriverSend.get(count).length()-1));
                 count++;
             }
-            String[] testMethods = new String[testDriverSend.size()];
-            for (int i = 0; i < testDriverSend.size(); i++) {
+            ArrayList<String> theOne =new ArrayList<>();
+            for(int i =0; i<testDriverSend.size();i++){
                 if(testDriverSend.get(i).contains("#")){
-                    testMethods[i] = testDriverSend.get(i);
+                    theOne.add(testDriverSend.get(i));
                 }
-
             }
+            String[] testMethods = new String[theOne.size()];
+            for (int i = 0; i < theOne.size(); i++) {
+                    testMethods[i] = theOne.get(i);
+                }
 
             runTests(testMethods);
         });
@@ -162,6 +185,13 @@ public class TestGUI extends Application {
 
 
         return results;
+    }
+    public static void showDetailsButton(String testName, Throwable exception) {
+        // This method assumes you're showing an Alert with the exception details.
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Failure details for " + testName + ": \n" + exception.getMessage(), ButtonType.CLOSE);
+            alert.showAndWait();
+        });
     }
 
     public static void main(String[] args) {

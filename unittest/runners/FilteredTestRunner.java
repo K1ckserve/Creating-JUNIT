@@ -2,6 +2,8 @@ package unittest.runners;
 
 import unittest.annotations.Test;
 import unittest.assertions.AssertionException;
+import unittest.listeners.GUITestListener;
+import unittest.listeners.TestListener;
 import unittest.results.TestClassResult;
 import unittest.results.TestMethodResult;
 
@@ -26,13 +28,19 @@ public class FilteredTestRunner extends TestRunner {
                     dup.add(c);
                     Object testInstance = testClass.getDeclaredConstructor().newInstance();
                     for (Method method : testClass.getDeclaredMethods()) {
+                        TestListener tester = new GUITestListener();
+                        super.addListener(tester);
+                        guilist.testStarted(method.getName());
+
                         if (c.equals(method.getName())) {
                             if (method.isAnnotationPresent(Test.class)) {
                                 try {
                                     method.invoke(testInstance);
+                                    guilist.testSucceeded(new TestMethodResult(method.getName(), true, null));
                                     classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
                                 } catch (Exception e) {
                                     Throwable cause = e.getCause();
+                                    guilist.testFailed(new TestMethodResult(method.getName(), false, (AssertionException) cause));
                                     classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, (AssertionException) cause));
                                 }
                             }
