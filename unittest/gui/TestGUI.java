@@ -101,8 +101,12 @@ public class TestGUI extends Application {
             }
             String[] testMethods = new String[testDriverSend.size()];
             for (int i = 0; i < testDriverSend.size(); i++) {
-                testMethods[i] = testDriverSend.get(i);
+                if(testDriverSend.get(i).contains("#")){
+                    testMethods[i] = testDriverSend.get(i);
+                }
+
             }
+
             runTests(testMethods);
         });
 
