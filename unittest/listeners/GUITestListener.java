@@ -23,10 +23,11 @@ public class GUITestListener implements TestListener {
     }
 
     @Override
-    public void testFailed(TestMethodResult testMethodResult) {
+    public void testFailed(TestMethodResult testMethodResult,TestGUI gui) {
 
             TestGUI.appendText("Test Failed: " + testMethodResult.getName());
             // Assuming TestGUI can handle a request to show details
-            TestGUI.showDetailsButton(testMethodResult.getName(), testMethodResult.getException());
+            gui.fails.put(testMethodResult.getName(),testMethodResult.getException());
+            
     }
 }

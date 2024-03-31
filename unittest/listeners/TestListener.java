@@ -1,5 +1,6 @@
 package unittest.listeners;
 
+import unittest.gui.TestGUI;
 import unittest.results.TestMethodResult;
 
 public interface TestListener {
@@ -11,5 +12,5 @@ public interface TestListener {
     public void testSucceeded(TestMethodResult testMethodResult);
 
     // Call this method right after the test method finished running and failed
-    public void testFailed(TestMethodResult testMethodResult);
+    public void testFailed(TestMethodResult testMethodResult, TestGUI gui);
 }

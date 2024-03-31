@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import unittest.annotations.Ordered;
 import unittest.annotations.Test;
 import unittest.driver.TestDriver;
+import unittest.listeners.GUITestListener;
 import unittest.listeners.TestListener;
 import unittest.results.TestClassResult;
 import unittest.runners.FilteredTestRunner;
@@ -19,11 +20,14 @@ import unittest.runners.OrderedTestRunner;
 import unittest.runners.ParameterizedTestRunner;
 import unittest.runners.TestRunner;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.*;
 
 public class TestGUI extends Application {
     private static TextArea outputArea;
+    public Map<String,Throwable> fails = new HashMap<>();
 
 
     // Assuming these are your test classes
@@ -67,10 +71,6 @@ public class TestGUI extends Application {
 
         // Add outputArea to your gridPane or other layout containers
         gridPane.add(outputArea, 0, 2, 2, 1);
-        Map<String,ArrayList<String>> d = new HashMap<>();
-        d.put("test1",new ArrayList<>());
-        d.put("test2",new ArrayList<>());
-        d.put("test3",new ArrayList<>());
 
 
         ListView<CheckBox> testSelectionListView = new ListView<>();
@@ -90,6 +90,14 @@ public class TestGUI extends Application {
 
         Button runTestsButton = new Button("Run Selected Tests");
         runTestsButton.setOnAction(e -> {
+            Map<String,ArrayList<String>> d = new HashMap<>();
+            d.put("test1",new ArrayList<>());
+            d.put("test2",new ArrayList<>());
+            d.put("test3",new ArrayList<>());
+            fails.clear();
+
+
+
             for (CheckBox checkBox : testItems) {
                 if (checkBox.isSelected()) {
                     System.out.println("Selected: " + checkBox.getText());
@@ -162,7 +170,8 @@ public class TestGUI extends Application {
                     methodsToRun = parts[1].split(",");
                     Collections.addAll(mthds, methodsToRun);
                     clazz = Class.forName(className);
-                    FTR = new FilteredTestRunner(clazz, mthds, className);
+                    TestListener guiListener = new GUITestListener();
+                    FTR = new FilteredTestRunner(clazz, mthds, className, this, guiListener);
                     results.add(FTR.run());
                 } else { // if nothing else then we will run basic TR
                     clazz = Class.forName(className);
@@ -188,8 +197,13 @@ public class TestGUI extends Application {
     }
     public static void showDetailsButton(String testName, Throwable exception) {
         // This method assumes you're showing an Alert with the exception details.
+
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Failure details for " + testName + ": \n" + exception.getMessage(), ButtonType.CLOSE);
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            exception.printStackTrace(pw);
+            String stackTrace = sw.toString();
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Failure details for " + testName + ": \n" + stackTrace, ButtonType.CLOSE);
             alert.showAndWait();
         });
     }

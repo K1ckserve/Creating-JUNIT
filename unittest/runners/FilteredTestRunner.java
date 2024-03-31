@@ -2,6 +2,7 @@ package unittest.runners;
 
 import unittest.annotations.Test;
 import unittest.assertions.AssertionException;
+import unittest.gui.TestGUI;
 import unittest.listeners.GUITestListener;
 import unittest.listeners.TestListener;
 import unittest.results.TestClassResult;
@@ -13,9 +14,13 @@ import java.util.List;
 
 public class FilteredTestRunner extends TestRunner {
     List<String> testMethods;
-    public FilteredTestRunner(Class testClass, List<String> testMethods, String className) {
+    TestGUI gui;
+    TestListener  listener;
+    public FilteredTestRunner(Class testClass, List<String> testMethods, String className, TestGUI gui, TestListener guiListener) {
         super(testClass,className);
         this.testMethods= testMethods;
+        this.gui = gui;
+        this.listener = guiListener;
         // TODO: complete this constructor
     }
     @Override
@@ -32,8 +37,7 @@ public class FilteredTestRunner extends TestRunner {
 
                         if (c.equals(method.getName())) {
                             if (method.isAnnotationPresent(Test.class)) {
-                                TestListener tester = new GUITestListener();
-                                super.addListener(tester);
+                                super.addListener(listener);
                                 guilist.testStarted(method.getName());
                                 try {
                                     method.invoke(testInstance);
@@ -41,7 +45,7 @@ public class FilteredTestRunner extends TestRunner {
                                     classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
                                 } catch (Exception e) {
                                     Throwable cause = e.getCause();
-                                    guilist.testFailed(new TestMethodResult(method.getName(), false, (AssertionException) cause));
+                                    guilist.testFailed(new TestMethodResult(method.getName(), false, (AssertionException) cause),gui);
                                     classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, (AssertionException) cause));
                                 }
                             }
