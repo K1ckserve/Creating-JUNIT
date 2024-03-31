@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import unittest.annotations.Ordered;
 import unittest.annotations.Test;
 import unittest.driver.TestDriver;
+import unittest.listeners.TestListener;
 import unittest.results.TestClassResult;
 import unittest.runners.FilteredTestRunner;
 import unittest.runners.OrderedTestRunner;
@@ -148,6 +149,7 @@ public class TestGUI extends Application {
                         TR = new OrderedTestRunner(clazz, className);
                     } else {
                         TR = new TestRunner(clazz, className);
+                      //  TR.addListener(guilist);
                     }
 
                     results.add(TR.run());

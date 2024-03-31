@@ -2,6 +2,7 @@ package unittest.runners;
 
 import unittest.annotations.Test;
 import unittest.assertions.AssertionException;
+import unittest.listeners.GUITestListener;
 import unittest.listeners.TestListener;
 import unittest.results.TestClassResult;
 import unittest.results.TestMethodResult;
@@ -13,6 +14,7 @@ import java.util.Collections;
 public class TestRunner {
     Class testClass;
     String className;
+    TestListener guilist;
     //Object testInstance;
 
 
@@ -42,11 +44,16 @@ public class TestRunner {
             }
             for (Method method : ord) {
                 if (method.isAnnotationPresent(Test.class)) {
+                    TestListener tester = new GUITestListener();
+                    addListener(tester);
+                    guilist.testStarted(method.getName());
                     try {
                         method.invoke(testInstance);
+                        guilist.testSucceeded(new TestMethodResult(method.getName(), true, null));
                         classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
                     } catch (Exception e) {
                         Throwable cause = e.getCause();
+                        guilist.testFailed(new TestMethodResult(method.getName(), false, (AssertionException) cause));
                         classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, (AssertionException) cause));
                     }
                 }
@@ -58,6 +65,7 @@ public class TestRunner {
 }
 
     public void addListener(TestListener listener) {
+        this.guilist = listener;
 
     }
 }
