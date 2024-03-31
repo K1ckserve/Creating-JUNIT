@@ -10,24 +10,24 @@ import unittest.results.TestMethodResult;
 public class GUITestListener implements TestListener {
 
     @Override
-    public void testStarted(String testMethod) {
+    public void testStarted(String className, String testMethod) {
 
             // Assuming TestGUI has a static method to append text to a TextArea or equivalent
-            TestGUI.appendText("Test Started: " + testMethod);
+            TestGUI.appendText("Test Started: " + className + " "+testMethod);
 
     }
 
     @Override
-    public void testSucceeded(TestMethodResult testMethodResult) {
-            TestGUI.appendText("Test Succeeded: " + testMethodResult.getName());
+    public void testSucceeded(String className, TestMethodResult testMethodResult) {
+            TestGUI.appendText("Test Succeeded: " +className+" " +testMethodResult.getName());
     }
 
     @Override
-    public void testFailed(TestMethodResult testMethodResult,TestGUI gui) {
+    public void testFailed(String className, TestMethodResult testMethodResult,TestGUI gui) {
 
-            TestGUI.appendText("Test Failed: " + testMethodResult.getName());
+            TestGUI.appendText("Test Failed: " + className +" "+testMethodResult.getName());
             // Assuming TestGUI can handle a request to show details
-            gui.fails.put(testMethodResult.getName(),testMethodResult.getException());
-            
+            gui.fails.put(className+"-"+ testMethodResult.getName(),testMethodResult.getException());
+
     }
 }

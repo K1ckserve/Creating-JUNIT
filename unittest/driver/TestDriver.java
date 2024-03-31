@@ -52,8 +52,8 @@ public class TestDriver {
                     methodsToRun = parts[1].split(",");
                     Collections.addAll(mthds, methodsToRun);
                     clazz = Class.forName(className);
-                    FTR = new FilteredTestRunner(clazz, mthds, className);
-                    results.add(FTR.run());
+                    //FTR = new FilteredTestRunner(clazz, mthds, className);
+                 //   results.add(FTR.run());
                 } else { // if nothing else then we will run basic TR
                     clazz = Class.forName(className);
 

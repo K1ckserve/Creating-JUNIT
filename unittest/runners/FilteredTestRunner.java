@@ -38,14 +38,14 @@ public class FilteredTestRunner extends TestRunner {
                         if (c.equals(method.getName())) {
                             if (method.isAnnotationPresent(Test.class)) {
                                 super.addListener(listener);
-                                guilist.testStarted(method.getName());
+                                guilist.testStarted(className,method.getName());
                                 try {
                                     method.invoke(testInstance);
-                                    guilist.testSucceeded(new TestMethodResult(method.getName(), true, null));
+                                    guilist.testSucceeded(className, new TestMethodResult(method.getName(), true, null));
                                     classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
                                 } catch (Exception e) {
                                     Throwable cause = e.getCause();
-                                    guilist.testFailed(new TestMethodResult(method.getName(), false, (AssertionException) cause),gui);
+                                    guilist.testFailed(className, new TestMethodResult(method.getName(), false, (AssertionException) cause),gui);
                                     classResult.addTestMethodResult(new TestMethodResult(method.getName(), false, (AssertionException) cause));
                                 }
                             }

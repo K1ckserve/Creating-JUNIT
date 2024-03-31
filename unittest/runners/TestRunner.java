@@ -46,10 +46,9 @@ public class TestRunner {
                 if (method.isAnnotationPresent(Test.class)) {
                     TestListener tester = new GUITestListener();
                     addListener(tester);
-                    guilist.testStarted(method.getName());
+
                     try {
                         method.invoke(testInstance);
-                        guilist.testSucceeded(new TestMethodResult(method.getName(), true, null));
                         classResult.addTestMethodResult(new TestMethodResult(method.getName(), true, null));
                     } catch (Exception e) {
                         Throwable cause = e.getCause();

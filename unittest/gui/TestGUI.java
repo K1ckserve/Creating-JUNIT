@@ -69,6 +69,8 @@ public class TestGUI extends Application {
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(20, 20, 20, 20));
 
+
+
         // Add outputArea to your gridPane or other layout containers
         gridPane.add(outputArea, 0, 2, 2, 1);
 
@@ -86,10 +88,18 @@ public class TestGUI extends Application {
         }
 
         testSelectionListView.setItems(testItems);
-        gridPane.add(testSelectionListView, 0, 0, 2, 1);
+        gridPane.add(testSelectionListView, 0, 0);
 
         Button runTestsButton = new Button("Run Selected Tests");
+        Button failed = new Button("Fails");
+        failed.setOnAction(e -> {
+                    for (String key : fails.keySet()) {
+                        showDetailsButton(key, fails.get(key));
+                    }
+                });
+
         runTestsButton.setOnAction(e -> {
+            outputArea.clear();
             Map<String,ArrayList<String>> d = new HashMap<>();
             d.put("test1",new ArrayList<>());
             d.put("test2",new ArrayList<>());
@@ -143,7 +153,7 @@ public class TestGUI extends Application {
         });
 
         gridPane.add(runTestsButton, 0, 1, 2, 1);
-
+        gridPane.add(failed, 2, 2);
         Scene scene = new Scene(gridPane, 500, 300);
         applicationStage.setScene(scene);
         applicationStage.show();
