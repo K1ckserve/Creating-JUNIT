@@ -19,8 +19,10 @@ import java.util.stream.Collectors;
 
 public class TestDriver {
     String[] test;
-    public TestDriver(String[] test){
+    int flag = 0;
+    public TestDriver(String[] test, int flag){
         this.test =test;
+        this.flag = flag;
     }
 
 
@@ -29,7 +31,7 @@ public class TestDriver {
      * each test class, in the order given.
      */
     public List<TestClassResult> runTests(String[] testclasses) {
-        int flag=0;
+        int flags=0;
         // TODO: complete this method
         // We will call this method from our JUnit test cases.
         ArrayList<TestClassResult> results = new ArrayList<TestClassResult>();
@@ -42,7 +44,7 @@ public class TestDriver {
                 ParameterizedTestRunner PTR;
                 TestRunner TR;
                 if (className.contains("#")) { // this will correctly return all of the tests for the filitred test method
-                    flag =1;
+                    flags =1;
                     ArrayList<String> mthds = new ArrayList<>();
                     String[] methodsToRun = null;
                     String[] parts = className.split("#");
@@ -56,7 +58,7 @@ public class TestDriver {
                     clazz = Class.forName(className);
 
                     if (clazz.isAnnotationPresent(Ordered.class)) {
-                        flag=1;
+                        flags=1;
                         TR = new OrderedTestRunner(clazz, className);
                     } else {
                         TR = new TestRunner(clazz, className);
@@ -68,13 +70,10 @@ public class TestDriver {
                 e.printStackTrace(); // Handle errors related to class loading or instantiation
             }
         }
-        printOrderedFiltered(results);
+        //printOrderedFiltered(results);
 
 
         return results;
-
-
-
     }
 
     public static void printOrderedFiltered(ArrayList<TestClassResult> results){

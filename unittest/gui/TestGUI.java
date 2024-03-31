@@ -10,16 +10,17 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import unittest.annotations.Ordered;
 import unittest.annotations.Test;
 import unittest.driver.TestDriver;
+import unittest.results.TestClassResult;
 import unittest.runners.FilteredTestRunner;
+import unittest.runners.OrderedTestRunner;
+import unittest.runners.ParameterizedTestRunner;
 import unittest.runners.TestRunner;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TestGUI extends Application {
 
@@ -102,8 +103,7 @@ public class TestGUI extends Application {
             for (int i = 0; i < testDriverSend.size(); i++) {
                 testMethods[i] = testDriverSend.get(i);
             }
-            TestDriver run = new TestDriver(testMethods);
-            run.runTests(testMethods);
+            runTests(testMethods);
         });
 
         gridPane.add(runTestsButton, 0, 1, 2, 1);
@@ -111,6 +111,51 @@ public class TestGUI extends Application {
         Scene scene = new Scene(gridPane, 500, 300);
         applicationStage.setScene(scene);
         applicationStage.show();
+    }
+    public List<TestClassResult> runTests(String[] testclasses) {
+        int flags=0;
+        // TODO: complete this method
+        // We will call this method from our JUnit test cases.
+        ArrayList<TestClassResult> results = new ArrayList<TestClassResult>();
+        for (String className : testclasses) {
+
+            try {
+                Class<?> clazz; // put all of these are becasue the scop was fucked
+                FilteredTestRunner FTR;
+                OrderedTestRunner ORT;
+                ParameterizedTestRunner PTR;
+                TestRunner TR;
+                if (className.contains("#")) { // this will correctly return all of the tests for the filitred test method
+                    flags =1;
+                    ArrayList<String> mthds = new ArrayList<>();
+                    String[] methodsToRun = null;
+                    String[] parts = className.split("#");
+                    className = parts[0];
+                    methodsToRun = parts[1].split(",");
+                    Collections.addAll(mthds, methodsToRun);
+                    clazz = Class.forName(className);
+                    FTR = new FilteredTestRunner(clazz, mthds, className);
+                    results.add(FTR.run());
+                } else { // if nothing else then we will run basic TR
+                    clazz = Class.forName(className);
+
+                    if (clazz.isAnnotationPresent(Ordered.class)) {
+                        flags=1;
+                        TR = new OrderedTestRunner(clazz, className);
+                    } else {
+                        TR = new TestRunner(clazz, className);
+                    }
+
+                    results.add(TR.run());
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // Handle errors related to class loading or instantiation
+            }
+        }
+        //printOrderedFiltered(results);
+
+
+        return results;
     }
 
     public static void main(String[] args) {
