@@ -27,13 +27,14 @@ public class FilteredTestRunner extends TestRunner {
                 if(!dup.contains(c)) {
                     dup.add(c);
                     Object testInstance = testClass.getDeclaredConstructor().newInstance();
+
                     for (Method method : testClass.getDeclaredMethods()) {
-                        TestListener tester = new GUITestListener();
-                        super.addListener(tester);
-                        guilist.testStarted(method.getName());
 
                         if (c.equals(method.getName())) {
                             if (method.isAnnotationPresent(Test.class)) {
+                                TestListener tester = new GUITestListener();
+                                super.addListener(tester);
+                                guilist.testStarted(method.getName());
                                 try {
                                     method.invoke(testInstance);
                                     guilist.testSucceeded(new TestMethodResult(method.getName(), true, null));
