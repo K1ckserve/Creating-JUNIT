@@ -31,14 +31,15 @@ public class TestGUI extends Application {
 
 
     // Assuming these are your test classes
-    private List<Class<?>> getTestClasses() {
+    private List<Class<?>> getTestClasses(String cp) {
         List<Class<?>> classes = new ArrayList<>();
         // Dynamically adding classes would require a classpath scanning library
         try {
             // Mock-up example, replace with actual class names
-            classes.add(Class.forName("studenttest.test1"));
-            classes.add(Class.forName("studenttest.test2"));
-            classes.add(Class.forName("studenttest.test3"));
+            classes.add(Class.forName(cp));
+            //classes.add(Class.forName("studenttest.test1"));
+            //classes.add(Class.forName("studenttest.test2"));
+            //classes.add(Class.forName("studenttest.test3"));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -73,83 +74,93 @@ public class TestGUI extends Application {
 
         // Add outputArea to your gridPane or other layout containers
         gridPane.add(outputArea, 0, 2, 2, 1);
-
+        TextField classpathField = new TextField();
+        classpathField.setPromptText("Enter classpath...");
+        gridPane.add(classpathField, 3, 1); // Adjust the grid position as needed
 
         ListView<CheckBox> testSelectionListView = new ListView<>();
         ObservableList<CheckBox> testItems = FXCollections.observableArrayList();
 
-        for (Class<?> testClass : getTestClasses()) {
-            for (Method method : testClass.getDeclaredMethods()) {
-                if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
-                    CheckBox checkBox = new CheckBox(testClass.getSimpleName() + "-" + method.getName());
-                    testItems.add(checkBox);
-                }
-            }
-        }
+
+//        for (Class<?> testClass : getTestClasses()) {
+//            for (Method method : testClass.getDeclaredMethods()) {
+//                if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
+//                    CheckBox checkBox = new CheckBox(testClass.getSimpleName() + "-" + method.getName());
+//                    testItems.add(checkBox);
+//                }
+//            }
+//        }
 
         testSelectionListView.setItems(testItems);
         gridPane.add(testSelectionListView, 0, 0);
-
+        Button cp = new Button("Add CP");
+        gridPane.add(cp, 4, 1);
         Button runTestsButton = new Button("Run Selected Tests");
-        Button failed = new Button("Fails");
+        Button failed = new Button("View Details");
         failed.setOnAction(e -> {
                     for (String key : fails.keySet()) {
                         showDetailsButton(key, fails.get(key));
                     }
                 });
-
-        runTestsButton.setOnAction(e -> {
+        cp.setOnAction(e->{
             outputArea.clear();
-            Map<String,ArrayList<String>> d = new HashMap<>();
-            d.put("test1",new ArrayList<>());
-            d.put("test2",new ArrayList<>());
-            d.put("test3",new ArrayList<>());
+            //d.put("test1",new ArrayList<>());
+            //d.put("test2",new ArrayList<>());
+            //d.put("test3",new ArrayList<>());
             fails.clear();
-
-
-
-            for (CheckBox checkBox : testItems) {
-                if (checkBox.isSelected()) {
-                    System.out.println("Selected: " + checkBox.getText());
-
-
-                    String[] theClass = checkBox.getText().split("-");
-                    d.get(theClass[0]).add(theClass[1]);
-//                    try{
-//                        String[] testD;
-//                        Class<?> cls = Class.forName("studenttest." +theClass[0]+"."+theClass[1]);
-////                        String name = theClass[1];
-// //                       List<String> testsToTest = new ArrayList<>();
-////                        testsToTest.add(name);
-////                        TestRunner filt = new FilteredTestRunner(cls,testsToTest,theClass[0]);
-//                    }catch(ClassNotFoundException w){
-//
-//                    }
-                    // Place your logic to run the test here.
+            Map<String,ArrayList<String>> d = new HashMap<>();
+            String classpath = classpathField.getText().trim();
+            for (Class<?> testClass : getTestClasses(classpath)) {
+                for (Method method : testClass.getDeclaredMethods()) {
+                    if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
+                        d.put(method.getName(), new ArrayList<>());
+                        CheckBox checkBox = new CheckBox(testClass.getSimpleName() + "-" + method.getName());
+                        testItems.add(checkBox);
+                    }
                 }
             }
-            int count =0;
-            ArrayList<String> testDriverSend = new ArrayList<>();
-            for(String key : d.keySet()){
-                testDriverSend.add("studenttest."+key+"#");
-                for(String l : d.get(key)){
-                    testDriverSend.set(count, testDriverSend.get(count) +l+",");
+            testSelectionListView.setItems(testItems);
+            runTestsButton.setOnAction(s -> {
+                //outputArea.clear();
+                //d.put("test1",new ArrayList<>());
+                //d.put("test2",new ArrayList<>());
+                //d.put("test3",new ArrayList<>());
+                //fails.clear();
+
+
+
+                for (CheckBox checkBox : testItems) {
+                    if (checkBox.isSelected()) {
+                        System.out.println("Selected: " + checkBox.getText());
+
+
+                        String[] theClass = checkBox.getText().split("-");
+                        d.get(theClass[1]).add(theClass[1]);
+                    }
                 }
-                testDriverSend.set(count, testDriverSend.get(count).substring(0, testDriverSend.get(count).length()-1));
-                count++;
-            }
-            ArrayList<String> theOne =new ArrayList<>();
-            for(int i =0; i<testDriverSend.size();i++){
-                if(testDriverSend.get(i).contains("#")){
-                    theOne.add(testDriverSend.get(i));
+                int count =0;
+                ArrayList<String> testDriverSend = new ArrayList<>();
+                for(String key : d.keySet()){
+                    testDriverSend.add(classpath+"#");
+                    for(String l : d.get(key)){
+                        testDriverSend.set(count, testDriverSend.get(count) +l+",");
+                    }
+                    testDriverSend.set(count, testDriverSend.get(count).substring(0, testDriverSend.get(count).length()-1));
+                    count++;
                 }
-            }
-            String[] testMethods = new String[theOne.size()];
-            for (int i = 0; i < theOne.size(); i++) {
+                ArrayList<String> theOne =new ArrayList<>();
+                for(int i =0; i<testDriverSend.size();i++){
+                    if(testDriverSend.get(i).contains("#")){
+                        theOne.add(testDriverSend.get(i));
+                    }
+                }
+                String[] testMethods = new String[theOne.size()];
+                for (int i = 0; i < theOne.size(); i++) {
                     testMethods[i] = theOne.get(i);
                 }
 
-            runTests(testMethods);
+                runTests(testMethods);
+            });
         });
 
         gridPane.add(runTestsButton, 0, 1, 2, 1);
