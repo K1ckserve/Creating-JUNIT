@@ -158,7 +158,7 @@ public class TestGUI extends Application {
             if(classpathField.getText()!=null) {
                 String classpath = classpathField.getText().trim();
                 for (Class<?> testClass : getTestClasses(classpath)) {
-                    d.put(testClass.getSimpleName(), new ArrayList<>());
+                    d.put(classpath, new ArrayList<>());
                     ArrayList<String> alph = new ArrayList<>();
                     ArrayList<Method> ord = new ArrayList<>();
                     for(Method meth : testClass.getDeclaredMethods()){
@@ -174,7 +174,7 @@ public class TestGUI extends Application {
                     }
                     for (Method method : ord) {
                         if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
-                            CheckBox checkBox = new CheckBox(testClass.getSimpleName() + "-" + method.getName());
+                            CheckBox checkBox = new CheckBox(classpath + "-" + method.getName());
                             testItems.add(checkBox);
                         }
                     }
@@ -188,13 +188,15 @@ public class TestGUI extends Application {
 
 
                             String[] theClass = checkBox.getText().split("-");
+                           // String[] theClass1 = theClass[1].split("-");
                             d.get(theClass[0]).add(theClass[1]);
                         }
                     }
                     int count = 0;
+                    String[] parts = classpath.split("\\.");
                     ArrayList<String> testDriverSend = new ArrayList<>();
                     for (String key : d.keySet()) {
-                        testDriverSend.add("studenttest."+key + "#");
+                        testDriverSend.add(key+"#");
                         for (String l : d.get(key)) {
                             testDriverSend.set(count, testDriverSend.get(count) + l + ",");
                         }
@@ -207,6 +209,7 @@ public class TestGUI extends Application {
                             theOne.add(testDriverSend.get(i));
                         }
                     }
+                    Collections.sort(theOne);
                     String[] testMethods = new String[theOne.size()];
                     for (int i = 0; i < theOne.size(); i++) {
                         testMethods[i] = theOne.get(i);
