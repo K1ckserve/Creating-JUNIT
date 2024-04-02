@@ -122,9 +122,10 @@ public class TestGUI extends Application {
             if(classpathField.getText()!=null) {
                 String classpath = classpathField.getText().trim();
                 for (Class<?> testClass : getTestClasses(classpath)) {
+
+                    d.put(testClass.getSimpleName(), new ArrayList<>());
                     for (Method method : testClass.getDeclaredMethods()) {
                         if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
-                            d.put(method.getName(), new ArrayList<>());
                             CheckBox checkBox = new CheckBox(testClass.getSimpleName() + "-" + method.getName());
                             testItems.add(checkBox);
                         }
@@ -145,13 +146,13 @@ public class TestGUI extends Application {
 
 
                             String[] theClass = checkBox.getText().split("-");
-                            d.get(theClass[1]).add(theClass[1]);
+                            d.get(theClass[0]).add(theClass[1]);
                         }
                     }
                     int count = 0;
                     ArrayList<String> testDriverSend = new ArrayList<>();
                     for (String key : d.keySet()) {
-                        testDriverSend.add(classpath + "#");
+                        testDriverSend.add("studenttest."+key + "#");
                         for (String l : d.get(key)) {
                             testDriverSend.set(count, testDriverSend.get(count) + l + ",");
                         }
