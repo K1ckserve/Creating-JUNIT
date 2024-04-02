@@ -29,6 +29,8 @@ public class TestGUI extends Application {
     private static TextArea outputArea;
     public Map<String,Throwable> fails = new HashMap<>();
 
+    public Map<String,ArrayList<String>> d = new HashMap<>();
+
 
     // Assuming these are your test classes
     private List<Class<?>> getTestClasses(String cp) {
@@ -97,77 +99,96 @@ public class TestGUI extends Application {
         gridPane.add(cp, 4, 1);
         Button runTestsButton = new Button("Run Selected Tests");
         Button failed = new Button("View Details");
+        Button reset = new Button("Reset");
+        gridPane.add(reset, 5, 2);
+        reset.setOnAction(e->{
+            outputArea.clear();
+            fails.clear();
+            d.clear();
+            testItems.clear();
+
+        });
         failed.setOnAction(e -> {
                     for (String key : fails.keySet()) {
                         showDetailsButton(key, fails.get(key));
                     }
                 });
         cp.setOnAction(e->{
-            outputArea.clear();
+            clear();
             //d.put("test1",new ArrayList<>());
             //d.put("test2",new ArrayList<>());
             //d.put("test3",new ArrayList<>());
-            fails.clear();
-            Map<String,ArrayList<String>> d = new HashMap<>();
-            String classpath = classpathField.getText().trim();
-            for (Class<?> testClass : getTestClasses(classpath)) {
-                for (Method method : testClass.getDeclaredMethods()) {
-                    if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
-                        d.put(method.getName(), new ArrayList<>());
-                        CheckBox checkBox = new CheckBox(testClass.getSimpleName() + "-" + method.getName());
-                        testItems.add(checkBox);
+
+            if(classpathField.getText()!=null) {
+                String classpath = classpathField.getText().trim();
+                for (Class<?> testClass : getTestClasses(classpath)) {
+                    for (Method method : testClass.getDeclaredMethods()) {
+                        if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
+                            d.put(method.getName(), new ArrayList<>());
+                            CheckBox checkBox = new CheckBox(testClass.getSimpleName() + "-" + method.getName());
+                            testItems.add(checkBox);
+                        }
                     }
                 }
+                testSelectionListView.setItems(testItems);
+                runTestsButton.setOnAction(s -> {
+                    clear();
+                    //d.put("test1",new ArrayList<>());
+                    //d.put("test2",new ArrayList<>());
+                    //d.put("test3",new ArrayList<>());
+
+
+
+                    for (CheckBox checkBox : testItems) {
+                        if (checkBox.isSelected()) {
+                            System.out.println("Selected: " + checkBox.getText());
+
+
+                            String[] theClass = checkBox.getText().split("-");
+                            d.get(theClass[1]).add(theClass[1]);
+                        }
+                    }
+                    int count = 0;
+                    ArrayList<String> testDriverSend = new ArrayList<>();
+                    for (String key : d.keySet()) {
+                        testDriverSend.add(classpath + "#");
+                        for (String l : d.get(key)) {
+                            testDriverSend.set(count, testDriverSend.get(count) + l + ",");
+                        }
+                        testDriverSend.set(count, testDriverSend.get(count).substring(0, testDriverSend.get(count).length() - 1));
+                        count++;
+                    }
+                    ArrayList<String> theOne = new ArrayList<>();
+                    for (int i = 0; i < testDriverSend.size(); i++) {
+                        if (testDriverSend.get(i).contains("#")) {
+                            theOne.add(testDriverSend.get(i));
+                        }
+                    }
+                    String[] testMethods = new String[theOne.size()];
+                    for (int i = 0; i < theOne.size(); i++) {
+                        testMethods[i] = theOne.get(i);
+                    }
+
+                    runTests(testMethods);
+                });
             }
-            testSelectionListView.setItems(testItems);
-            runTestsButton.setOnAction(s -> {
-                //outputArea.clear();
-                //d.put("test1",new ArrayList<>());
-                //d.put("test2",new ArrayList<>());
-                //d.put("test3",new ArrayList<>());
-                //fails.clear();
-
-
-
-                for (CheckBox checkBox : testItems) {
-                    if (checkBox.isSelected()) {
-                        System.out.println("Selected: " + checkBox.getText());
-
-
-                        String[] theClass = checkBox.getText().split("-");
-                        d.get(theClass[1]).add(theClass[1]);
-                    }
-                }
-                int count =0;
-                ArrayList<String> testDriverSend = new ArrayList<>();
-                for(String key : d.keySet()){
-                    testDriverSend.add(classpath+"#");
-                    for(String l : d.get(key)){
-                        testDriverSend.set(count, testDriverSend.get(count) +l+",");
-                    }
-                    testDriverSend.set(count, testDriverSend.get(count).substring(0, testDriverSend.get(count).length()-1));
-                    count++;
-                }
-                ArrayList<String> theOne =new ArrayList<>();
-                for(int i =0; i<testDriverSend.size();i++){
-                    if(testDriverSend.get(i).contains("#")){
-                        theOne.add(testDriverSend.get(i));
-                    }
-                }
-                String[] testMethods = new String[theOne.size()];
-                for (int i = 0; i < theOne.size(); i++) {
-                    testMethods[i] = theOne.get(i);
-                }
-
-                runTests(testMethods);
-            });
         });
+
 
         gridPane.add(runTestsButton, 0, 1, 2, 1);
         gridPane.add(failed, 2, 2);
         Scene scene = new Scene(gridPane, 500, 300);
         applicationStage.setScene(scene);
         applicationStage.show();
+    }
+
+    public void clear(){
+        fails.clear();
+        outputArea.clear();
+        for (Map.Entry<String, ArrayList<String>> entry : d.entrySet()) {
+            entry.getValue().clear();
+            // Process the key and value as needed
+        }
     }
     public List<TestClassResult> runTests(String[] testclasses) {
         int flags=0;
