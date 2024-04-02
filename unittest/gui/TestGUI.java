@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import unittest.annotations.Ordered;
@@ -59,48 +60,57 @@ public class TestGUI extends Application {
 
     @Override
     public void start(Stage applicationStage) throws Exception {
-        outputArea = new TextArea();
-        outputArea.setEditable(false); // Prevent the user from editing this area directly.
-
-        // Assuming the rest of your setup is here...
-        // Ensure outputArea is added to your layout, e.g., gridPane, and properly configured
-        // before making it visible or interacting with it.
-
-        applicationStage.setTitle("Test Framework GUI");
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(20, 20, 20, 20));
 
-
-
-        // Add outputArea to your gridPane or other layout containers
-        gridPane.add(outputArea, 0, 2, 2, 1);
+// Classpath Field and Button
         TextField classpathField = new TextField();
         classpathField.setPromptText("Enter classpath...");
-        gridPane.add(classpathField, 3, 1); // Adjust the grid position as needed
+        GridPane.setConstraints(classpathField, 0, 0, 2, 1); // Column 0-1, Row 0
+        gridPane.add(classpathField, 0, 0);
 
+        Button cpButton = new Button("Add CP");
+        GridPane.setConstraints(cpButton, 2, 0); // Column 2, Row 0
+        gridPane.add(cpButton, 2, 0);
+
+// Test Selection ListView
         ListView<CheckBox> testSelectionListView = new ListView<>();
         ObservableList<CheckBox> testItems = FXCollections.observableArrayList();
-
-
-//        for (Class<?> testClass : getTestClasses()) {
-//            for (Method method : testClass.getDeclaredMethods()) {
-//                if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
-//                    CheckBox checkBox = new CheckBox(testClass.getSimpleName() + "-" + method.getName());
-//                    testItems.add(checkBox);
-//                }
-//            }
-//        }
-
         testSelectionListView.setItems(testItems);
-        gridPane.add(testSelectionListView, 0, 0);
-        Button cp = new Button("Add CP");
-        gridPane.add(cp, 4, 1);
+        GridPane.setConstraints(testSelectionListView, 0, 1, 3, 1); // Column 0-2, Row 1, spanning 3 columns
+        gridPane.add(testSelectionListView, 0, 1);
+
+// Buttons
         Button runTestsButton = new Button("Run Selected Tests");
+        GridPane.setConstraints(runTestsButton, 0, 2); // Column 0, Row 2
+        gridPane.add(runTestsButton, 0, 2);
+
         Button failed = new Button("View Details");
+        GridPane.setConstraints(failed, 1, 2); // Column 1, Row 2
+        gridPane.add(failed, 1, 2);
+
         Button reset = new Button("Reset");
-        gridPane.add(reset, 5, 2);
+        GridPane.setConstraints(reset, 2, 2); // Column 2, Row 2
+        gridPane.add(reset, 2, 2);
+
+// Output Area
+        outputArea = new TextArea();
+        outputArea.setEditable(false);
+        GridPane.setConstraints(outputArea, 0, 3, 3, 1); // Column 0-2, Row 3, spanning 3 columns
+        gridPane.add(outputArea, 0, 3);
+
+// Adjust grid column widths and row heights as needed
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setPercentWidth(33);
+        gridPane.getColumnConstraints().addAll(column1, column1, column1); // Equal width columns
+
+// Apply the grid to the scene
+        Scene scene = new Scene(gridPane, 600, 400); // Adjusted size for better visibility
+        applicationStage.setScene(scene);
+        applicationStage.setTitle("Test Framework GUI");
+        applicationStage.show();
         reset.setOnAction(e->{
             outputArea.clear();
             fails.clear();
@@ -113,7 +123,7 @@ public class TestGUI extends Application {
                         showDetailsButton(key, fails.get(key));
                     }
                 });
-        cp.setOnAction(e->{
+        cpButton.setOnAction(e->{
             clear();
             //d.put("test1",new ArrayList<>());
             //d.put("test2",new ArrayList<>());
@@ -176,9 +186,7 @@ public class TestGUI extends Application {
         });
 
 
-        gridPane.add(runTestsButton, 0, 1, 2, 1);
-        gridPane.add(failed, 2, 2);
-        Scene scene = new Scene(gridPane, 500, 300);
+
         applicationStage.setScene(scene);
         applicationStage.show();
     }
