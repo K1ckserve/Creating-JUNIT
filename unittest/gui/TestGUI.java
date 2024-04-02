@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import unittest.annotations.Ordered;
 import unittest.annotations.Test;
@@ -118,23 +119,60 @@ public class TestGUI extends Application {
             testItems.clear();
 
         });
+//        failed.setOnAction(e -> {
+//            Stage ne = new Stage();
+//                    for (String key : fails.keySet()) {
+//                        showDetailsButton(key, fails.get(key));
+//                    }
+//                });
         failed.setOnAction(e -> {
-                    for (String key : fails.keySet()) {
-                        showDetailsButton(key, fails.get(key));
+            Stage failedTestsStage = new Stage();
+            failedTestsStage.setTitle("Failed Tests");
+
+            ListView<String> failedTestsListView = new ListView<>();
+            ObservableList<String> failedTestsItems = FXCollections.observableArrayList();
+            failedTestsItems.addAll(fails.keySet()); // Add the names of the failed tests
+            failedTestsListView.setItems(failedTestsItems);
+
+            failedTestsListView.setOnMouseClicked(event -> {
+                String selectedTest = failedTestsListView.getSelectionModel().getSelectedItem();
+                if (selectedTest != null) {
+                    Throwable exception = fails.get(selectedTest);
+                    if (exception != null) {
+                        showDetailsButton(selectedTest, exception);
                     }
-                });
+                }
+            });
+
+            VBox layout = new VBox(10);
+            layout.getChildren().addAll(new Label("Select a test to view details:"), failedTestsListView);
+            layout.setPadding(new Insets(10));
+
+            Scene scenes = new Scene(layout, 400, 300);
+            failedTestsStage.setScene(scenes);
+            failedTestsStage.show();
+        });
+
         cpButton.setOnAction(e->{
             clear();
-            //d.put("test1",new ArrayList<>());
-            //d.put("test2",new ArrayList<>());
-            //d.put("test3",new ArrayList<>());
-
             if(classpathField.getText()!=null) {
                 String classpath = classpathField.getText().trim();
                 for (Class<?> testClass : getTestClasses(classpath)) {
-
                     d.put(testClass.getSimpleName(), new ArrayList<>());
-                    for (Method method : testClass.getDeclaredMethods()) {
+                    ArrayList<String> alph = new ArrayList<>();
+                    ArrayList<Method> ord = new ArrayList<>();
+                    for(Method meth : testClass.getDeclaredMethods()){
+                        alph.add(meth.getName());
+                        Collections.sort(alph);
+                    }
+                    for(String s: alph){
+                        for(Method meth : testClass.getDeclaredMethods()){
+                            if(s.equals(meth.getName())){
+                                ord.add(meth);
+                            }
+                        }
+                    }
+                    for (Method method : ord) {
                         if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
                             CheckBox checkBox = new CheckBox(testClass.getSimpleName() + "-" + method.getName());
                             testItems.add(checkBox);
@@ -144,12 +182,6 @@ public class TestGUI extends Application {
                 testSelectionListView.setItems(testItems);
                 runTestsButton.setOnAction(s -> {
                     clear();
-                    //d.put("test1",new ArrayList<>());
-                    //d.put("test2",new ArrayList<>());
-                    //d.put("test3",new ArrayList<>());
-
-
-
                     for (CheckBox checkBox : testItems) {
                         if (checkBox.isSelected()) {
                             System.out.println("Selected: " + checkBox.getText());
