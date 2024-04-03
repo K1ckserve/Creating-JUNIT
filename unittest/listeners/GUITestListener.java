@@ -12,7 +12,7 @@ public class GUITestListener implements TestListener {
     @Override
     public void testStarted(String className, String testMethod) {
 
-            // Assuming TestGUI has a static method to append text to a TextArea or equivalent
+            //Send these texts to the gui using the append test method
             TestGUI.appendText("Test Started: " + className + " "+testMethod);
 
     }

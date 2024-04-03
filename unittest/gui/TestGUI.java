@@ -40,7 +40,7 @@ public class TestGUI extends Application {
         // Dynamically adding classes would require a classpath scanning library
         try {
             // Mock-up example, replace with actual class names
-            classes.add(Class.forName(cp));
+            classes.add(Class.forName(cp));//reads the class path that is entered to get the classes using reflection
             //classes.add(Class.forName("studenttest.test1"));
             //classes.add(Class.forName("studenttest.test2"));
             //classes.add(Class.forName("studenttest.test3"));
@@ -61,7 +61,7 @@ public class TestGUI extends Application {
 
     @Override
     public void start(Stage applicationStage) throws Exception {
-        GridPane gridPane = new GridPane();
+        GridPane gridPane = new GridPane(); //set up the initial grid pane
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(20, 20, 20, 20));
@@ -125,7 +125,7 @@ public class TestGUI extends Application {
 //                        showDetailsButton(key, fails.get(key));
 //                    }
 //                });
-        failed.setOnAction(e -> {
+        failed.setOnAction(e -> { //this will create a pressable list that will reveal the failed test data
             Stage failedTestsStage = new Stage();
             failedTestsStage.setTitle("Failed Tests");
 
@@ -153,13 +153,13 @@ public class TestGUI extends Application {
             failedTestsStage.show();
         });
 
-        cpButton.setOnAction(e->{
+        cpButton.setOnAction(e->{ ///only start this loop when cp button is pressed
             clear();
             if(classpathField.getText()!=null) {
                 String classpath = classpathField.getText().trim();
                 for (Class<?> testClass : getTestClasses(classpath)) {
-                    d.put(classpath, new ArrayList<>());
-                    ArrayList<String> alph = new ArrayList<>();
+                    d.put(classpath, new ArrayList<>());//add the methods to a map for later
+                    ArrayList<String> alph = new ArrayList<>();//all of this is just sorting the tests alphabetically
                     ArrayList<Method> ord = new ArrayList<>();
                     for(Method meth : testClass.getDeclaredMethods()){
                         alph.add(meth.getName());
@@ -174,13 +174,13 @@ public class TestGUI extends Application {
                     }
                     for (Method method : ord) {
                         if (method.isAnnotationPresent(Test.class)) { // Check if the method is annotated with @Test
-                            CheckBox checkBox = new CheckBox(classpath + "-" + method.getName());
+                            CheckBox checkBox = new CheckBox(classpath + "-" + method.getName()); //if the method is present in the class add it to the checklist
                             testItems.add(checkBox);
                         }
                     }
                 }
                 testSelectionListView.setItems(testItems);
-                runTestsButton.setOnAction(s -> {
+                runTestsButton.setOnAction(s -> {//now make it possible for this button to do something
                     clear();
                     for (CheckBox checkBox : testItems) {
                         if (checkBox.isSelected()) {
@@ -189,13 +189,13 @@ public class TestGUI extends Application {
 
                             String[] theClass = checkBox.getText().split("-");
                            // String[] theClass1 = theClass[1].split("-");
-                            d.get(theClass[0]).add(theClass[1]);
+                            d.get(theClass[0]).add(theClass[1]); //get the checkmarks back from
                         }
                     }
                     int count = 0;
-                    String[] parts = classpath.split("\\.");
+                    //String[] parts = classpath.split("\\.");
                     ArrayList<String> testDriverSend = new ArrayList<>();
-                    for (String key : d.keySet()) {
+                    for (String key : d.keySet()) { //getting hte proper string to send it to the run tests method
                         testDriverSend.add(key+"#");
                         for (String l : d.get(key)) {
                             testDriverSend.set(count, testDriverSend.get(count) + l + ",");
